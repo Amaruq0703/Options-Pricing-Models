@@ -68,3 +68,6 @@ def register(request):
 
 def bsm(request):
     return render(request, 'pricing/bsm.html')
+
+def bino(request):
+    return render(request, 'pricing/bino.html')

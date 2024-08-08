@@ -17,7 +17,7 @@
                     <a href="{% url 'bsm' %}">Black Scholes Model</a>
                 </li>
                 <li class="navitem">
-                  <a href="#">Binomial Model</a>
+                  <a href="{% url 'bino' %}">Binomial Model</a>
                 </li>
                 {% if user.is_authenticated %}
                     <li class="navitem">
@@ -31,7 +31,7 @@
             
             <ul class="navlist">
                 <li class="navitem">
-                    <p id="navname">Options Pricing</p>
+                    <a href="{% url 'index' %}" id="navname">Options Pricing</a>
                 </li>
                 {% if user.is_authenticated %}
                 <li class="navitem">
