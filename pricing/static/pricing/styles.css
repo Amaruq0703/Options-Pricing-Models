@@ -12,15 +12,18 @@ body{
     align-items: center;
     min-height: 100vh;
     background: #dfdfdf;
+    width: 100%;
+    overflow: auto;
 }
 
 nav{
     background-color: #000;
     position: fixed;
-    top:0;
+    top: 0;
     box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.05);
     width: 100%;
     height: 50px;
+    z-index: 998;
 }
 
 .navlist{
@@ -57,7 +60,6 @@ nav li:nth-child(2){
 }
 
 nav a{
-    margin-left: auto;
     height: 100%;
     padding: 0 30px;
     text-decoration: none;
@@ -71,6 +73,7 @@ nav a:hover{
     text-decoration: none;
     color: #fff;
 }
+
 
 .sidebar{
     position: fixed;
@@ -201,4 +204,225 @@ a:hover{
 .sign-up-link a{
     color: #000;
     font-weight: 600;
+}
+
+.home-content{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#homeTextBig{
+    font-size: 100px;
+    font-weight: 600;
+}
+
+#homeTextSmall{
+    font-size: 50px;
+    font-weight: 500;
+}
+
+#infoHead{
+    font-size: 30px;
+    font-weight: 400;
+}
+
+.infoRow{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.infoButton{
+    width: 100%;
+    height: 60px;
+    background: #222;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+}
+
+.infoButton:hover{
+    background: #000;
+    transform: scale(1.05, 1);
+}
+
+.infoRow label{
+    color: #fff;
+    cursor: pointer;
+}
+
+.pageHeader {
+    z-index: 997;
+    position: relative;
+    margin-right: auto;
+    margin-top: 55px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+
+.formcontainer{
+    z-index: 997;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 70%;
+    position: relative;
+    margin-right: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+}
+
+.calculate-btn {
+    z-index: inherit;
+    width: 440px;
+    height: 60px;
+    background: #222;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: .3s;
+    position: relative;
+    margin-left: 10px;
+}
+
+
+.calculate-btn:hover{
+    background: #000;
+    transform: scale(1.05, 1);
+}
+
+.calculate-btn label{
+    z-index: inherit;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    color: #fff;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.calculation-form {
+    z-index: 997;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.calclate-input-areas {
+    z-index: inherit;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.calculate-input-box {
+    z-index: inherit;
+    width: 48%;  
+    margin-bottom: 15px;
+}
+
+.calculate-input-field{
+    width: 100%;
+    height: 60px;
+    font-size: 17px;
+    padding: 0 25px;
+    border-radius: 30px;
+    border: none;
+    box-shadow: 0px 5px 10px 1px rgba(0, 0, 0, 0.05);
+    outline: none;
+    transition: .3s;
+}
+
+::placeholder{
+    font-weight: 500;
+    color: #222;
+}
+
+.calculate-input-field:focus{
+    width: 105%;
+}
+
+#resultconstainer{
+    display: none;
+    height: 75px;
+    min-height: 75px;
+    position: relative;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    z-index: 997;
+    margin-left: 10px;
+}
+
+#callValue, #putValue{
+    z-index: inherit;
+    width: 48%;
+    min-width: 300px;
+    height: 100%;
+    border: none;
+    border-radius: 30px;
+    background-color: #222;
+    position: relative;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.valueText{
+    z-index: inherit;
+    position: absolute;
+    top: 25%;
+    left: 40%;
+    color: #fff;
+    font-size: 25px;
+    font-weight: 450;
+}
+
+#heatmapcontainer{
+    z-index: 997;
+    display: none;
+    min-height: 200px;
+    width: 100%;
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: auto;
+    overflow-y: auto;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-left: 10px;
+}
+
+#heatmapCall, #heatmapPut {
+    z-index: inherit;
+    width: 48%;
+    min-width: 300px;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .calculate-input-box {
+        width: 100%;
+    }
+    #callValue, #putValue {
+        width: 100%;
+    }
+    #heatmapCall, #heatmapPut {
+        width: 100%;
+    }
+    #heatmapcontainer{
+        margin-top: 85px;
+    }
 }

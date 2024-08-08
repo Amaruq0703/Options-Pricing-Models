@@ -65,3 +65,6 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "pricing/register.html")
+
+def bsm(request):
+    return render(request, 'pricing/bsm.html')

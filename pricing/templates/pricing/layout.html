@@ -14,7 +14,7 @@
                     <a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="40px" fill="#e8eaed"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></a>
                 </li>
                 <li class="navitem">
-                    <a href="#">Black Scholes Model</a>
+                    <a href="{% url 'bsm' %}">Black Scholes Model</a>
                 </li>
                 <li class="navitem">
                   <a href="#">Binomial Model</a>
@@ -48,10 +48,10 @@
             </ul>
             
           </nav>
-        <div class="container">
-            {% block body %}
-              {% endblock %}
-        </div>
+        
+        {% block body %}
+        {% endblock %}
+        
         
         <script>
             function showSidebar(){
@@ -64,6 +64,7 @@
                 sidebar.style.display = 'none'
             }
         </script>
-        
+        {% block script %}
+        {%endblock%}
     </body>
 </html>
