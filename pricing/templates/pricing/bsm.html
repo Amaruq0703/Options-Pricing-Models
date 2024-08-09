@@ -11,33 +11,34 @@ Pricing | Black Scholes
             <h1>Black Scholes Model</h1>
         </div>
 
+        <!-- Creates Input Form -->
         <div class="formcontainer">
             <form class="calculation-form" id="calculation-form">
 
                 <div class="calclate-input-areas">
                     <div class="calculate-input-box">
                         <label for="stockPrice">Stock Price:</label>
-                        <input type="number" id="stockPrice" name="stockPrice" placeholder="" class="calculate-input-field" required>
+                        <input type="number" id="stockPrice" name="stockPrice" placeholder="" value="{{ stock }}" class="calculate-input-field" required>
                     </div>
 
                     <div class="calculate-input-box">
                         <label for="strikePrice">Strike Price:</label>
-                        <input type="number" id="strikePrice" name="strikePrice" placeholder="" class="calculate-input-field" required>
+                        <input type="number" id="strikePrice" name="strikePrice" placeholder="" value="{{ strike }}" class="calculate-input-field" required>
                     </div>
 
                     <div class="calculate-input-box">
                         <label for="expiration">Time to Expiry:</label>
-                        <input type="number" id="expiration" name="expiration" placeholder="days" class="calculate-input-field" required>
+                        <input type="number" id="expiration" name="expiration" placeholder="days" value="{{ expiry }}" class="calculate-input-field" required>
                     </div>
 
                     <div class="calculate-input-box">
                         <label for="rfr">Risk Free Rate:</label>
-                        <input type="number" id="rfr" name="rfr" placeholder="%" class="calculate-input-field" required>
+                        <input type="number" id="rfr" name="rfr" placeholder="%" value="{{ rfr }}" class="calculate-input-field" required>
                     </div>
 
                     <div class="calculate-input-box">
                         <label for="volatility">Volatility:</label>
-                        <input type="number" id="volatility" name="volatility" placeholder="%" class="calculate-input-field" required>
+                        <input type="number" id="volatility" name="volatility" placeholder="%" value="{{ vol }}" class="calculate-input-field" required>
                     </div>
 
                     <div class="calculate-input-box">
@@ -45,12 +46,16 @@ Pricing | Black Scholes
                         <input type="number" id="premium" name="premium" placeholder="optional" class="calculate-input-field">
                     </div>
                 </div>
-                <button class="calculate-btn" id="submit">
-                    <label for="submit-btn">Calculate</label>
+                <button class="calculate-btn" id="calculate" type="button">
+                    <label for="calculate">Calculate</label>
+                </button>
+                <button class="calculate-btn" id="save" type="button" disabled>
+                    <label for="save-btn">Save Calculation</label>
                 </button>
             </form>
         </div>
-
+    
+        <!-- Hidden Results and Heatmaps -->
     <div id="resultconstainer">
         <div id="callValue">
             <p id="callValueText" class="valueText"></p>
@@ -64,6 +69,7 @@ Pricing | Black Scholes
         <div id="heatmapCall"></div>
         <div id="heatmapPut"></div>
     </div>
+
 {% endblock %}
 
 {% block script %}
@@ -78,27 +84,82 @@ Pricing | Black Scholes
     })
 
     const inputs = form.querySelectorAll('input');
-    const calculateButton = document.getElementById('submit');
+    const calculateButton = document.getElementById('calculate');
     const results = document.getElementById('resultconstainer');
     const heatmaps = document.getElementById('heatmapcontainer');
+    const savebutton = document.getElementById('save');
     const formcontainer = document.querySelector('.formcontainer');
 
     calculateButton.addEventListener('click', calculateClicked);
+
+    savebutton.addEventListener('click', saveClicked);
+
+    // Getting CSRF
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+    function saveClicked() {
+
+        const savedata = {
+            S : parseFloat(document.getElementById('stockPrice').value),
+            K : parseFloat(document.getElementById('strikePrice').value),
+            T : parseFloat(document.getElementById('expiration').value),
+            r : parseFloat(document.getElementById('rfr').value),
+            sigma : parseFloat(document.getElementById('volatility').value),
+            model : 'BLACK_SCHOLES',
+            csrfmiddlewaretoken : getCookie('csrftoken')
+        };
+
+        fetch('/savecalculation/', {
+            method : 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': savedata.csrfmiddlewaretoken
+            },
+            body: JSON.stringify(savedata)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Calculation Saved Successfuly');
+            } else {
+                alert('Failed To Save Calculation')
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    };
 
     function calculateClicked() {
         if (allInputsFilled()) {
             calculate();
             results.style.display = 'flex';
             heatmaps.style.display= 'flex';
+            savebutton.disabled = false;
             formcontainer.style.marginBottom = '5px';
             addInputListeners();
         }
-    }
+    };
 
     function allInputsFilled() {
         return Array.from(inputs).filter(input => input.required).every(input => input.value !== '');
-    }
+    };
 
+    // Calculating Probability factor
     function cumulativeDistribution(x) {
         
         const a1 = 0.31938153;
@@ -110,8 +171,9 @@ Pricing | Black Scholes
         const w = 1.0 - 1.0 / Math.sqrt(2 * Math.PI) * Math.exp(-x * x / 2.0) *
             (a1 * k + a2 * k * k + a3 * k * k * k + a4 * k * k * k * k + a5 * k * k * k * k * k);
         return x < 0.0 ? 1.0 - w : w;
-    }
+    };
 
+    // Calls Calculations and Heatmaps
     function calculate() {
         
         const S = parseFloat(document.getElementById('stockPrice').value);
@@ -138,8 +200,9 @@ Pricing | Black Scholes
             drawHeatmapPut(heatmapdataput, 'Put Value on Stock Price vs Volatility');
         }
         
-    }
+    };
 
+    // Calculation for Black Scholes Calls
     function blackScholesCall(S, K, T, r, sigma) {
         
         const d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * Math.sqrt(T));
@@ -147,8 +210,9 @@ Pricing | Black Scholes
         const call = S * cumulativeDistribution(d1) - K * Math.exp(-r * T) * cumulativeDistribution(d2);
 
         return Math.round(call*100)/100;
-    }
+    };
 
+    // Calculation for Black Scholes Puts
     function blackScholesPut(S, K, T, r, sigma) {
         
         const d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * Math.sqrt(T));
@@ -156,8 +220,9 @@ Pricing | Black Scholes
         const put = K * Math.exp(-r * T) * cumulativeDistribution(-d2) - S * cumulativeDistribution(-d1);
 
         return Math.round(put*100)/100;
-    }
+    };
 
+    // Creating data for heat maps call
     function generateHeatmapDataCall(S, K, T, r, sigma, premium) {
         
         const calldata = []
@@ -174,7 +239,7 @@ Pricing | Black Scholes
                 let mapCall = blackScholesCall(currentStockPrice, K, T, r, currentVolatility)
 
                 if (premium !== null) {
-                    mapCall = Math.max(K - S, 0) - sigma;
+                    mapCall = mapCall - premium;
                 }
                 callrow.push(mapCall);
             }
@@ -184,8 +249,9 @@ Pricing | Black Scholes
         const volscall = Array.from(volscallset);
         const ret = [calldata, stockscall, volscall];
         return ret;
-    }
+    };
 
+    // Creating data for heatmaps puts
     function generateHeatmapDataPut(S, K, T, r, sigma, premium) {
         
         const putdata = []
@@ -202,7 +268,7 @@ Pricing | Black Scholes
                 let mapPut = blackScholesPut(currentStockPrice, K, T, r, currentVolatility)
 
                 if (premium !== null) {
-                    mapPut = Math.max(K - S, 0) - sigma;
+                    mapPut = mapPut - premium;
                 }
                 putrow.push(mapPut);
             }
@@ -212,8 +278,9 @@ Pricing | Black Scholes
         const volsput = Array.from(volsputset);
         const ret = [putdata, stocksput, volsput];
         return ret;
-    }
+    };
 
+    // Drawing heatmap call
     function drawHeatmapCall(datas, title) {
         
         data = datas[0]
@@ -238,6 +305,7 @@ Pricing | Black Scholes
             .enter()
             .append("g");
 
+        // Creating cells
         cells.append("rect")
             .attr("x", (d, i) => x(i % data[0].length))
             .attr("y", (d, i) => y(Math.floor(i / data[0].length)))
@@ -245,6 +313,7 @@ Pricing | Black Scholes
             .attr("height", y.bandwidth())
             .style("fill", d => color(d));
 
+        // Adding value to cells
         cells.append("text")
             .attr("x", (d, i) => x(i % data[0].length) + x.bandwidth() / 2)
             .attr("y", (d, i) => y(Math.floor(i / data[0].length)) + y.bandwidth() / 2)
@@ -343,8 +412,9 @@ Pricing | Black Scholes
             .attr("class", "color-axis")
             .attr("transform", `translate(${width + 30},0)`)
             .call(colorAxis);
-    }
+    };
 
+    // Drawing Heatmap Put
     function drawHeatmapPut(datas, title) {
         
         data = datas[0]
@@ -369,6 +439,7 @@ Pricing | Black Scholes
             .enter()
             .append("g");
 
+        //Creating cells
         cells.append("rect")
             .attr("x", (d, i) => x(i % data[0].length))
             .attr("y", (d, i) => y(Math.floor(i / data[0].length)))
@@ -376,6 +447,7 @@ Pricing | Black Scholes
             .attr("height", y.bandwidth())
             .style("fill", d => color(d));
 
+        // Adding values to cells
         cells.append("text")
             .attr("x", (d, i) => x(i % data[0].length) + x.bandwidth() / 2)
             .attr("y", (d, i) => y(Math.floor(i / data[0].length)) + y.bandwidth() / 2)
@@ -474,21 +546,21 @@ Pricing | Black Scholes
             .attr("class", "color-axis")
             .attr("transform", `translate(${width + 30},0)`)
             .call(colorAxis);
-    }
+    };
 
     function addInputListeners() {
         
         inputs.forEach(input => {
             input.addEventListener('input', handleInputChange);
         });
-    }
+    };
 
     function handleInputChange() {
         
         if (allInputsFilled()) {
             calculate();
         }
-    }
-})
+    };
+});
 </script>
 {% endblock %}

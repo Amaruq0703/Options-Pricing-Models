@@ -345,11 +345,6 @@ a:hover{
     transition: .3s;
 }
 
-::placeholder{
-    font-weight: 500;
-    color: #222;
-}
-
 .calculate-input-field:focus{
     width: 105%;
 }
@@ -412,6 +407,59 @@ a:hover{
     height: 100%;
 }
 
+.calculate-btn:disabled {
+    background: #ccc; /* Grey background for disabled state */
+    cursor: not-allowed; /* Change cursor to indicate disabled state */
+    transform: none; /* Remove hover effect */
+}
+
+.calculate-btn:disabled label {
+    cursor: not-allowed; /* Change cursor for label */
+}
+
+#cardcontainer{
+    z-index: 997;
+    position: relative;
+    width: 100%;
+    margin-bottom: auto;
+    margin-top: 50px;
+}
+
+.saved-card{
+    border-radius: 15px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    padding: 15px; 
+    margin: 20px; 
+    background-color: #333; 
+    color: white;
+}
+
+.saved-card-body{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.saved-info{
+    z-index: inherit;
+    color: #fff;
+    font-weight: 600;
+}
+
+.saved-card-button{
+    background-color: #222; 
+    border: none; 
+    border-radius: 50px; 
+    color: white; 
+    padding: 10px 20px; 
+    cursor: pointer;
+}
+
+.saved-card-button:hover{
+    background: #000;
+    transform: scale(1.05, 1);
+}
+
 @media (max-width: 768px) {
     .calculate-input-box {
         width: 100%;
@@ -424,5 +472,8 @@ a:hover{
     }
     #heatmapcontainer{
         margin-top: 85px;
+    }
+    .saved-card-body{
+        flex-direction: column;
     }
 }

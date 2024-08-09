@@ -9,5 +9,7 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("blackscholes", views.bsm, name='bsm'),
     path('binomial', views.bino, name='bino'),
-
+    path('savecalculation/', views.save_calc, name='save'),
+    path('saved', views.saved, name='saved'),
+    path('savedcalculation/<int:calcID>', views.savedToModel, name='tomodel')
 ]

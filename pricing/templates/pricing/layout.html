@@ -21,7 +21,7 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="navitem">
-                        <a href="#">Saved Calculations</a>
+                        <a href="{% url 'saved' %}">Saved Calculations</a>
                     </li>
                     <li class="navitem">
                         <a href="{% url 'logout' %}">Log Out</a>

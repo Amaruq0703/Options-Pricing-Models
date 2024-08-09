@@ -1,8 +1,10 @@
 from django.shortcuts import render, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+import json
 
 from .models import *
 # Create your views here.
@@ -71,3 +73,53 @@ def bsm(request):
 
 def bino(request):
     return render(request, 'pricing/bino.html')
+
+def save_calc(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        stock_price = data.get('S')
+        strike_price = data.get('K')
+        expiration = data.get('T')
+        rfr = data.get('r')
+        volatility = data.get('sigma')
+        model_type = data.get('model')
+
+        calculation = Calculation(
+            user = User.objects.get(pk = request.user.id),
+            model = model_type,
+            stock = stock_price,
+            strike = strike_price,
+            expiry = expiration,
+            rfr = rfr,
+            vol = volatility
+        )
+
+        calculation.save()
+        return JsonResponse({'status' : 'success'})
+    
+    return JsonResponse({'status' : 'fail'})
+
+def saved(request):
+    user = User.objects.get(pk = request.user.id)
+    calcs = Calculation.objects.filter(user = user)
+    return render(request, 'pricing/saved.html',{
+        'calcs' : calcs
+    })
+
+def savedToModel(request, calcID):
+    calc = Calculation.objects.get(pk=calcID)
+    context = {
+        'stock' : calc.stock,
+        'strike' : calc.strike,
+        'expiry' : calc.expiry,
+        'rfr' : calc.rfr,
+        'vol' : calc.vol
+    }
+
+    model_type = calc.model
+
+    if model_type.lower() == 'black_scholes':
+        return render(request, 'pricing/bsm.html', context)
+    
+    elif model_type.lower() == 'binomial':
+        return render(request, 'pricing/bino.html', context)
